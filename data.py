@@ -43,6 +43,7 @@ def vocab_build(vocab_path, corpus_path, min_count):
     """
     data = read_corpus(corpus_path)
     word2id = {}
+    # word2id = {词 : [词id， 词频]}
     for sent_, tag_ in data:
         for word in sent_:
             if word.isdigit():
@@ -53,6 +54,8 @@ def vocab_build(vocab_path, corpus_path, min_count):
                 word2id[word] = [len(word2id)+1, 1]
             else:
                 word2id[word][1] += 1
+
+    # 从 wrod2id 中去掉低频词
     low_freq_words = []
     for word, [word_id, word_freq] in word2id.items():
         if word_freq < min_count and word != '<NUM>' and word != '<ENG>':
@@ -60,6 +63,7 @@ def vocab_build(vocab_path, corpus_path, min_count):
     for word in low_freq_words:
         del word2id[word]
 
+    # 更新 word2id，得到 word2id = {词: 词id}
     new_id = 1
     for word in word2id.keys():
         word2id[word] = new_id
@@ -67,7 +71,8 @@ def vocab_build(vocab_path, corpus_path, min_count):
     word2id['<UNK>'] = new_id
     word2id['<PAD>'] = 0
 
-    print(len(word2id))
+    # print(word2id)
+    print('word2id : ' ,len(word2id))
     with open(vocab_path, 'wb') as fw:
         pickle.dump(word2id, fw)
 
@@ -165,7 +170,18 @@ def batch_yield(data, batch_size, vocab, tag2label, shuffle=False):
 if __name__ == "__main__":
     vocab_path = './data_path/word2id.pkl'
     corpus_path = './data_path/train_data'
-    min_count = 5
+    # data = read_corpus(corpus_path)
+    # print(data[:2])
+    min_count = 3
     vocab_build(vocab_path, corpus_path, min_count)
-
-
+    # pass
+    # corpus_path = 'test0606.txt'
+    # data = read_corpus(corpus_path)
+    # for d in data:
+    #     print(d)
+    #     print(type(d))
+    #     print(len(d))
+    #     print(d[0])
+    #     print(d[1])
+    #     break
+    # print(type(data))
